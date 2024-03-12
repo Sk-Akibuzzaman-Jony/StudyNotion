@@ -86,7 +86,7 @@ exports.signUp = async(req, res) => {
             })
         }
     
-        //match condfirm pass and pass
+        //match confirm pass and pass
         if(confirmPassword != password){
             return res.status(400).json({
                 success : false,
@@ -97,7 +97,7 @@ exports.signUp = async(req, res) => {
         //check if user alreadt exists or not
         const existingUser = await User.findOne({email});
         if(existingUser){
-            return res.update(400).json({
+            return res.update(409).json({
                 success : false,
                 message : "User is already registered",
             }) 
@@ -115,7 +115,7 @@ exports.signUp = async(req, res) => {
             })
         } else if(otp !== recentOtp[0].otp){
             //invalilid otp
-            return res.status(400).json({
+            return res.status(401).json({
                 succes : false,
                 message : "Invalid OTP",
             })
@@ -166,7 +166,7 @@ exports.login = async(req, res) => {
 
         //validation data
         if(!email || !password){
-            return res.status(403).json({
+            return res.status(400).json({
                 success : false,
                 message : "All fields are required, please try again",
             })
@@ -176,7 +176,7 @@ exports.login = async(req, res) => {
         const user = await User.findOne({ email });
 
         if(!user){
-            return res.status(400).json({
+            return res.status(403).json({
                 success:false,
                 message:"User is not registered with us, please signup first",
             })
@@ -202,7 +202,7 @@ exports.login = async(req, res) => {
                 httpOnly:true,
             }
             res.cookie("token", token, options).status(200).json({
-                succes:true,
+                success:true,
                 token,
                 user,
                 message:"Logged in successfully",

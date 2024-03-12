@@ -4,10 +4,32 @@ import { useState } from "react";
 import FrameImage from "../assets/Images/frame.png";
 import TeacherImage from "../assets/Images/Frame 22.png";
 import CTAButton from "../components/core/HomePage/Button";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { sendOTP } from "../services/operations/authApi";
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userTypes = ["Student", "Instructor"];
   const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
+  const [formData, setFormData] = useState({
+    firstName:"",
+    lastName:"",
+    email:"",
+    password:"",
+    confirmPassword:"",
+  })
+  const handelOnChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]:e.target.value,
+    }))
+  }
+  const handelOnSubmit = (e) => {
+    e.preventDefault();
+    dispatch(sendOTP(formData.firstName, formData.lastName, formData.email, formData.password, formData.confirmPassword, currentUserType, dispatch, navigate));
+}
   return (
     <div className="flex flex-row w-11/12 mt-24 justify-center gap-16  mx-auto items-center mb-28">
       <div className="flex flex-col items center w-[30%] ">
@@ -55,34 +77,36 @@ const Signup = () => {
             <div className="flex flex-row gap-4 text-white">
               <div className="flex flex-col w-[50%]">
                 <label
-                  for="fname"
+                  for="firstName"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   First Name *
                 </label>
                 <input
                   type="text"
-                  name="fname"
+                  name="firstName"
                   id="fname"
                   class="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600 "
                   placeholder="Enter First Name"
                   required=""
+                  onChange={handelOnChange}
                 />
               </div>
               <div className="flex flex-col w-[50%]">
                 <label
-                  for="lname"
+                  for="lastName"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Last Name *
                 </label>
                 <input
                   type="text"
-                  name="lname"
+                  name="lastName"
                   id="lname"
                   class="bg-gray-50 border border-richblack-800 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-4 bg-richblack-800 dark:border-gray-600 text-richblack-200"
                   placeholder="Enter Last Name"
                   required
+                  onChange={handelOnChange}
                 />
               </div>
             </div>
@@ -100,6 +124,7 @@ const Signup = () => {
                 class="bg-gray-50 border border-richblack-800 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600 text-richblack-200"
                 placeholder="Enter Email Address"
                 required
+                onChange={handelOnChange}
               />
             </div>
             
@@ -119,6 +144,7 @@ const Signup = () => {
                   class="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600 "
                   placeholder="Enter Password"
                   required
+                  onChange={handelOnChange}
                 />
               </div>
               <div className="flex flex-col w-[50%]">
@@ -135,13 +161,16 @@ const Signup = () => {
                   class="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-4 bg-richblack-800 dark:border-gray-600"
                   placeholder="Enter Password"
                   required
+                  onChange={handelOnChange}
                 />
               </div>
             </div>
             <div className="mt-2"></div>
+            <button onClick={handelOnSubmit}>
             <CTAButton active={true} linkto={"#"}>
               Create Account
             </CTAButton>
+            </button>
             <p class="text-sm font-light text-white">
               Already have an an account{" "}
               <a
