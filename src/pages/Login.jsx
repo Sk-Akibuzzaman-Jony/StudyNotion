@@ -1,13 +1,35 @@
-import React from "react";
+import React,{ useEffect } from "react";
 import StudentImage from "../assets/Images/login.webp";
 import { useState } from "react";
 import FrameImage from "../assets/Images/frame.png";
 import TeacherImage from "../assets/Images/Frame 22.png";
 import CTAButton from "../components/core/HomePage/Button";
+import {useDispatch} from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {login} from "../services/operations/authApi";
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const userTypes = ["Student", "Instructor"];
   const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email:"",
+    password:"",
+  })
+  const handelOnChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]:e.target.value,
+    }))
+  }
+  const handelOnSubmit = (e) => {
+    e.preventDefault();
+    dispatch(login(formData.email, formData.password, navigate, dispatch));
+}
+
+
   return (
     <div className="flex flex-row w-11/12 mt-24 justify-center gap-16  mx-auto items-center mb-28">
       <div className="flex flex-col items center w-[30%] ">
@@ -66,6 +88,7 @@ const Login = () => {
                 class="bg-gray-50 border border-richblack-800text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600"
                 placeholder="Enter Email Address"
                 required=""
+                onChange={handelOnChange}
               />
             </div>
             <div>
@@ -82,6 +105,7 @@ const Login = () => {
                 placeholder="Enter Password"
                 class="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 dark:bg-gray-700 dark:border-gray-600 bg-richblack-800 "
                 required=""
+                onChange={handelOnChange}
               />
             </div>
             <div class="flex items-center justify-between pb-4 flex-row-reverse">
@@ -92,9 +116,11 @@ const Login = () => {
                 Forgot password?
               </a>
             </div>
-            <CTAButton active={true} linkto={"#"}>
+            <button type="submit" onClick={handelOnSubmit}>
+            <CTAButton active={true}>
               Sign In
             </CTAButton>
+            </button>
             <p class="text-sm font-light text-white">
               Don’t have an account yet?{" "}
               <a
