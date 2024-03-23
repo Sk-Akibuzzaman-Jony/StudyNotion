@@ -5,7 +5,7 @@ import FrameImage from "../assets/Images/frame.png";
 import TeacherImage from "../assets/Images/Frame 22.png";
 import CTAButton from "../components/core/HomePage/Button";
 import {useDispatch} from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {login} from "../services/operations/authApi";
 import { toast } from 'react-toastify';
 
@@ -109,12 +109,12 @@ const Login = () => {
               />
             </div>
             <div class="flex items-center justify-between pb-4 flex-row-reverse">
-              <a
-                href="#"
+              <Link
+                to="/reset-password"
                 class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 text-blue-100"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
             <button type="submit" onClick={handelOnSubmit}>
             <CTAButton active={true}>

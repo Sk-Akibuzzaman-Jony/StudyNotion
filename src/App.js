@@ -8,6 +8,9 @@ import VerifyOTP from "./pages/VerifyOTP";
 import { ToastContainer} from 'react-toastify';
 import ErrorPage from "./pages/ErrorPage";
 import AboutUs from "./pages/AboutUs";
+import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
+import ContactUs from "./pages/ContactUs";
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOTP/>}/>
         <Route path="/not-found" element={<ErrorPage/>}/>
         <Route path="/about" element={<AboutUs/>}/>
+        <Route path="/reset-password" element={<ResetPassword/>}/>
+        <Route path="update-password/:token" element={<UpdatePassword/>}/>
+        <Route path="/contact" element={<ContactUs/>}/>
       </Routes>
     </div>
   );

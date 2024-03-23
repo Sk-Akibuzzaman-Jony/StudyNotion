@@ -13,7 +13,7 @@ exports.resetPasswordToken = async (req, res) => {
         //check user for this email
 		const user = await User.findOne({ email: email });
 		if (!user) {
-			return res.json({
+			return res.status(401).json({
 				success: false,
 				message: `This Email: ${email} is not Registered With Us Enter a Valid Email `,
 			});
