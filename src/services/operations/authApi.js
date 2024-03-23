@@ -140,3 +140,65 @@ export function signup(otp, dispatch, navigate) {
     }
   }
 }
+
+export function resetPasswordToken(email, setEmailSent){
+  return async() =>{
+    const loading = toast.loading('Please Wait', {
+      toastId: "123",
+      position: "top-center",
+      hideProgressBar: true,
+    });
+    try {
+      const response = await apiConnector("POST", auth.RESET_PASSWORD_TOKEN_API, { email: email });
+      setEmailSent(true);
+    } catch (error) {
+      let errorMessage = "This service is not available, please try again later";
+      if(error.request.status == 401){
+        errorMessage = "The email is not registered with us";
+      }
+      toast.error(errorMessage, {
+        toastId: "789",
+        position: "top-center",
+        hideProgressBar: true,
+        autoClose: 2000,
+      });
+    } finally {
+      toast.dismiss(loading);
+    }
+  }
+}
+
+export function resetPassword(newPassword, confirmNewPassword, token, navigate){
+  const loading = toast.loading('Please Wait', {
+    toastId: "123",
+    position: "top-center",
+    hideProgressBar: true,
+  });
+  return async()=>{
+    try {
+      const response = await apiConnector("POST", auth.RESET_PASSWORD_API, { password: newPassword, confirmPassword:confirmNewPassword, token:token });
+      if(response.status == 200){
+        toast.success('Successfully changed password, please login again by using new password', {
+          toastId: "456",
+          position: "top-center",
+          hideProgressBar: true,
+          autoClose: 1000,
+        })
+      }
+    } catch (error) {
+      let errorMessage = "Password reset unsuccessfull, please try again later";
+      if(error.request.status === 401){
+        errorMessage = "The token provided is invalid or is expired";
+      }
+      toast.error(errorMessage, {
+        toastId: "789",
+        position: "top-center",
+        hideProgressBar: true,
+        autoClose: 2000,
+      });
+    } finally {
+      toast.dismiss(loading);
+      navigate("/login");
+    }
+  }
+}

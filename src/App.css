@@ -2,10 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-    overflow-x:hidden;
+html,
+body {
+  overflow-x: hidden;
 }
 
-.hompage_bg{
-    background-image:  url('../src/assets/Images/bghome.svg');
+.hompage_bg {
+  background-image: url("../src/assets/Images/bghome.svg");
 }
+
+.about-text-gradient1 {
+  background-image: linear-gradient(to right, #1fa2ff, #12d8fa, #a6ffcb);
+  -webkit-background-clip: clip;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-text-gradient2 {
+  background-image: linear-gradient(to right, #FF512F, #F09819);
+  -webkit-background-clip: clip;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-text-gradient3 {
+    background-image: linear-gradient(to right, #E65C00, #F9D423);
+    -webkit-background-clip: clip;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .about-text-gradient4 {
+    background-image: linear-gradient(to right, #833AB4, #FD1D1D, #FCB045);
+    -webkit-background-clip: clip;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  
