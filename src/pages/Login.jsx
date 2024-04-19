@@ -7,7 +7,6 @@ import CTAButton from "../components/core/HomePage/Button";
 import {useDispatch} from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {login} from "../services/operations/authApi";
-import { toast } from 'react-toastify';
 
 const Login = () => {
   const userTypes = ["Student", "Instructor"];

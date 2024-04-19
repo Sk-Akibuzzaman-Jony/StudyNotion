@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { signOut } from '../../services/operations/authApi';
 import { useNavigate } from 'react-router-dom';
 
 function classNames(...classes) {
@@ -10,36 +10,7 @@ function classNames(...classes) {
 
 export default function ProfileDropDown() {
     const profileDetails = useSelector(state => state.profile.user);
-    const navigate = useNavigate()
-    const onSignOut = () => {
-        const loading = toast.loading('Loading', {
-            toastId: "123",
-            position: "top-center",
-            hideProgressBar: true,
-            autoClose: false,
-        });
-        try {
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            toast.success('Signed Out', {
-                toastId: "789",
-                position: "top-center",
-                hideProgressBar: true,
-                autoClose: 2000,
-            });
-            navigate("/");
-            window.location.reload();
-        } catch (error) {
-            toast.error('There was a problem signing you out', {
-                toastId: "789",
-                position: "top-center",
-                hideProgressBar: true,
-                autoClose: 2000,
-            });
-        } finally {
-            toast.dismiss(loading);
-        }
-    }
+    const navigate = useNavigate();
     return (
         <Menu as="div" className="relative inline-block text-left">
             <div>
@@ -65,7 +36,7 @@ export default function ProfileDropDown() {
                         <Menu.Item>
                             {({ active }) => (
                                 <a
-                                    href="#"
+                                    href="/dashboard/my-profile"
                                     className={classNames(
                                         active ? 'bg-gray-100 text-grey-900' : 'text-richblack-50',
                                         'block px-4 py-2 text-sm'
@@ -94,7 +65,7 @@ export default function ProfileDropDown() {
                         <Menu.Item>
                             {({ active }) => (
                                 <button
-                                    onClick={onSignOut}
+                                    onClick={signOut(navigate)}
                                     className={classNames(
                                         active ? 'bg-gray-100 text-grey-900' : 'text-richblack-50',
                                         'block px-4 py-2 text-sm'

@@ -11,6 +11,9 @@ import AboutUs from "./pages/AboutUs";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import ContactUs from "./pages/ContactUs";
+import Dashboard from "./pages/Dashboard";
+import MyProfile from "./pages/MyProfile";
+import Settings from "./pages/Settings"
 
 function App() {
   return (
@@ -27,6 +30,11 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path="update-password/:token" element={<UpdatePassword/>}/>
         <Route path="/contact" element={<ContactUs/>}/>
+        <Route path="/dashboard" element={<Dashboard/>}>
+          <Route path="my-profile" element={<MyProfile/>}/>
+          <Route path="settings" element={<Settings/>}/>
+        </Route>
+        <Route path="*" element={<ErrorPage/>}/>
       </Routes>
     </div>
   );

@@ -11,3 +11,9 @@ export const auth = {
     RESET_PASSWORD_TOKEN_API : BASE_URL+"/auth/reset-password-token",
     RESET_PASSWORD_API : BASE_URL+"/auth/reset-password",
 }
+
+export const profile ={
+    UPLOAD_PROFILE_PIC : BASE_URL+"/profile/updateDisplayPicture",
+    DELETE_ACCOUNT : BASE_URL+"/profile/deleteProfile",
+    CHANGE_PASSWORD : BASE_URL+"/auth/changepassword"
+}
