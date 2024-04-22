@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.7.18",
+    "@ramonak/react-progress-bar": "^5.2.0",
     "@reduxjs/toolkit": "^2.1.0",
     "axios": "^1.6.7",
     "concurrently": "^8.2.2",

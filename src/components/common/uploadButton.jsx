@@ -22,7 +22,7 @@ export const UploadButton = ({ setFile,  setPreviewImage}) => {
       <div onClick={handleClick}>
         <Button className="button-upload" active={true}>
           <div className="flex gap-1">
-          Upload
+          Select Photo
           <div className="text-lg -translate-y-[1px]">
           <MdOutlineFileUpload />
           </div>

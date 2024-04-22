@@ -14,6 +14,7 @@ import ContactUs from "./pages/ContactUs";
 import Dashboard from "./pages/Dashboard";
 import MyProfile from "./pages/MyProfile";
 import Settings from "./pages/Settings"
+import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard/>}>
           <Route path="my-profile" element={<MyProfile/>}/>
           <Route path="settings" element={<Settings/>}/>
+          <Route path="enrolled-courses" element={<EnrolledCourses/>}/>
         </Route>
         <Route path="*" element={<ErrorPage/>}/>
       </Routes>

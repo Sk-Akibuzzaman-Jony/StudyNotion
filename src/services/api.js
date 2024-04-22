@@ -15,5 +15,6 @@ export const auth = {
 export const profile ={
     UPLOAD_PROFILE_PIC : BASE_URL+"/profile/updateDisplayPicture",
     DELETE_ACCOUNT : BASE_URL+"/profile/deleteProfile",
-    CHANGE_PASSWORD : BASE_URL+"/auth/changepassword"
+    CHANGE_PASSWORD : BASE_URL+"/auth/changepassword",
+    GET_ENROLLED_COURSES : BASE_URL+"/profile/getEnrolledCourses"
 }

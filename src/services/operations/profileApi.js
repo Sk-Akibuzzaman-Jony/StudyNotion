@@ -125,3 +125,34 @@ export function changePassword(
     }
   };
 }
+
+
+export async function getUserEnrolledCourses(token) {
+  const loading = toast.loading("Getting Enrolled Courses", {
+    toastId: "123",
+    position: "top-center",
+    hideProgressBar: true,
+    autoClose: false,
+  });
+  let result = []
+  try {
+    console.log("BEFORE Calling BACKEND API FOR ENROLLED COURSES");
+    const response = await apiConnector(
+      "GET",
+      profile.GET_ENROLLED_COURSES,
+      null,
+      {
+        Authorisation: `Bearer ${token}`,
+      }
+    )
+    if (!response.data.success) {
+      throw new Error(response.data.message)
+    }
+    result = response.data.courses == null ? {} : response.data.courses;
+  } catch (error) {
+    console.error(error)
+    toast.error("Could Not Get Enrolled Courses")
+  }
+  toast.dismiss(loading)
+  return result
+}
