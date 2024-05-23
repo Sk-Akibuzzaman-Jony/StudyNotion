@@ -136,13 +136,7 @@ export function signup(otp, dispatch, navigate) {
         }
       );
     } catch (error) {
-      let errorMessage = "Signup Failed, please try again later";
-      if (error.request.status === 403) {
-        errorMessage = "Please enter OTP";
-      } else if (error.request.status === 400) {
-        errorMessage = "Invalid OTP";
-      }
-      toast.error(errorMessage, {
+      toast.error(error.response.data.message, {
         toastId: "789",
         position: "top-center",
         hideProgressBar: true,

@@ -18,21 +18,21 @@ body {
 }
 
 .about-text-gradient2 {
-  background-image: linear-gradient(to right, #FF512F, #F09819);
+  background-image: linear-gradient(to right, #ff512f, #f09819);
   -webkit-background-clip: clip;
   -webkit-text-fill-color: transparent;
 }
 
 .about-text-gradient3 {
-    background-image: linear-gradient(to right, #E65C00, #F9D423);
-    -webkit-background-clip: clip;
-    -webkit-text-fill-color: transparent;
-  }
+  background-image: linear-gradient(to right, #e65c00, #f9d423);
+  -webkit-background-clip: clip;
+  -webkit-text-fill-color: transparent;
+}
 
-  .about-text-gradient4 {
-    background-image: linear-gradient(to right, #833AB4, #FD1D1D, #FCB045);
-    -webkit-background-clip: clip;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  
+.about-text-gradient4 {
+  background-image: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045);
+  -webkit-background-clip: clip;
+  -webkit-text-fill-color: transparent;
+}
+
+

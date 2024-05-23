@@ -16,4 +16,20 @@ const sectionSchema = new mongoose.Schema({
 
 });
 
+
+sectionSchema.pre('remove', async function (next) {
+    try {
+        const sectionId = this._id;
+
+        await Course.updateMany(
+            { courseContent: sectionId },
+            { $pull: { courseContent: sectionId } }
+        );
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = mongoose.model("Section", sectionSchema);

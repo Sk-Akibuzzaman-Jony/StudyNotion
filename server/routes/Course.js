@@ -9,6 +9,9 @@ const {
   createCourse,
   getAllCourses,
   getCourseDetails,
+  editCourse,
+  getInstructorCourses,
+  deleteCourse,
 } = require("../controllers/Course")
 
 
@@ -64,7 +67,15 @@ router.post("/addSubSection", auth, isInstructor, createSubSection)
 // Get all Registered Courses
 router.get("/getAllCourses", getAllCourses)
 // Get Details for a Specific Courses
-router.get("/getCourseDetails", getCourseDetails)
+router.post("/getCourseDetails", getCourseDetails)
+// Edit Course routes
+router.post("/editCourse", auth, isInstructor, editCourse)
+// Fetch Instructor Courses
+router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses);
+// Delete Subsection
+router.delete("/deleteCourse", auth, isInstructor, deleteCourse);
+//authenticated getcoursedetails
+router.post("/getFullCourseDetails", auth, isInstructor, getCourseDetails);
 
 // ***********************************************************************************************
 //                                      Category routes (Only by Admin)
@@ -72,7 +83,7 @@ router.get("/getCourseDetails", getCourseDetails)
 // Category can Only be Created by Admin
 router.post("/createCategory", auth, isAdmin, createCategory)
 router.get("/showAllCategories", showAllCategories)
-router.get("/getCategoryPageDetails", categoryPageDetails)
+router.post("/getCategoryPageDetails", categoryPageDetails)
 
 // *************************************************************************************************
 //                                      Rating and Review

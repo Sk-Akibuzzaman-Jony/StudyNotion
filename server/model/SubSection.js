@@ -18,4 +18,22 @@ const subSectionSchema = new mongoose.Schema({
 
 });
 
+
+subSectionSchema.pre('remove', async function (next) {
+    try {
+        const subSectionId = this._id;
+
+        // Find all sections containing this subsection and remove the reference
+        await Section.updateMany(
+            { subSection: subSectionId },
+            { $pull: { subSection: subSectionId } }
+        );
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 module.exports = mongoose.model("SubSection", subSectionSchema);

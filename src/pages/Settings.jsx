@@ -23,7 +23,7 @@ const Settings = () => {
   };
   const handleUpload = () => {
     dispatch(
-      uploadProfilePic(dispatch, file, profileDetails, token, setPreviewImage)
+      uploadProfilePic(dispatch, file, token, setPreviewImage)
     );
   };
   const [formData, setFormData] = useState({

@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import { fetchCourseCategories } from "../../services/operations/courseDetailsAPI";
 
 const Dropdown = ({ link }) => {
-  const subLinks = [
-    {
-      title: "python",
-      link: "/catalog/python",
-    },
-    {
-      title: "web dev",
-      link: "/catalog/web-development",
-    },
-  ];
+  const [catagories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const result = await fetchCourseCategories();
+      setCategories(result);
+    };
+    fetchCategories();
+  }, []);
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div className="">
@@ -38,11 +39,11 @@ const Dropdown = ({ link }) => {
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black">
           <div className="p-5">
-            {subLinks.length ? (
-              subLinks.map((subLink, index) => (
+            {catagories.length ? (
+              catagories.map((catagory, index) => (
                 <Menu.Item>
-                  <Link to={`${subLink.link}`} key={index}>
-                    <p>{subLink.title}</p>
+                  <Link to={`${link.path}/${catagory.name}`} key={index}>
+                    <p>{catagory.name}</p>
                   </Link>
                 </Menu.Item>
               ))

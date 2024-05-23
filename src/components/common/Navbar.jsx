@@ -11,45 +11,13 @@ import { categories } from '../../services/api'
 import { useState } from 'react'
 import Dropdown from './Dropdown'
 import ProfileDropdown from './ProfileDropdown'
-
-
-const subLinks = [
-    {
-        title: "python",
-        link: "/catalog/python"
-    },
-    {
-        title: "web dev",
-        link: "/catalog/web-development"
-    },
-];
-
+import { fetchCourseCategories } from '../../services/operations/courseDetailsAPI'
 
 const Navbar = () => {
     const { token } = useSelector((state) => state.auth);
     const { user } = useSelector((state) => state.profile);
     const { totalItems } = useSelector((state) => state.cart)
     const location = useLocation();
-
-    const [ssubLinks, setSsubLinks] = useState([]);
-
-    // const fetchSublinks = async () => {
-    //     try {
-    //         const result = await apiConnector("GET", categories.CATEGORIES_API);
-    //         console.log("Printing Sublinks result:", result);
-    //         setSsubLinks(result.data.data);
-    //     }
-    //     catch (error) {
-    //         console.log("Could not fetch the category list");
-    //     }
-    // }
-
-
-    // useEffect(() => {
-    //     fetchSublinks();
-    // }, [])
-
-
 
     const matchRoute = (route) => {
         return matchPath({ path: route }, location.pathname);
