@@ -136,22 +136,83 @@ export async function getUserEnrolledCourses(token) {
   });
   let result = []
   try {
-    console.log("BEFORE Calling BACKEND API FOR ENROLLED COURSES");
+    //console.log("BEFORE Calling BACKEND API FOR ENROLLED COURSES");
     const response = await apiConnector(
       "GET",
       profile.GET_ENROLLED_COURSES,
       null,
       {
-        Authorisation: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       }
     )
     if (!response.data.success) {
       throw new Error(response.data.message)
     }
+    console.log(response);
     result = response.data.courses == null ? {} : response.data.courses;
   } catch (error) {
     console.error(error)
     toast.error("Could Not Get Enrolled Courses")
+  }
+  toast.dismiss(loading)
+  return result
+}
+
+export async function addToCart(courseId, token){
+  const loading = toast.loading("Adding To Cart", {
+    toastId: "123",
+    position: "top-center",
+    hideProgressBar: true,
+    autoClose: false,
+  });
+  let result = []
+  try {
+    const response = await apiConnector(
+      "POST",
+      profile.ADD_TO_CART,
+      {courseId:courseId},
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+    if (!response.data.success) {
+      throw new Error(response.data.message)
+    }
+    //console.log(response);
+    result = response.data.user == null ? {} : response.data.user;
+  } catch (error) {
+    console.error("PROBLEM IN ADDING TO CART....",error)
+    toast.error("Could Not Add The Course To Cart")
+  }
+  toast.dismiss(loading)
+  return result
+}
+
+export async function removeFromCart(courseId, token){
+  const loading = toast.loading("Removing From Cart", {
+    toastId: "123",
+    position: "top-center",
+    hideProgressBar: true,
+    autoClose: false,
+  });
+  let result = []
+  try {
+    const response = await apiConnector(
+      "POST",
+      profile.REMOVE_FROM_CART,
+      {courseId:courseId},
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+    if (!response.data.success) {
+      throw new Error(response.data.message)
+    }
+    //console.log(response);
+    result = response.data.user == null ? {} : response.data.user;
+  } catch (error) {
+    console.error("PROBLEM IN REMOVING TO CART....",error)
+    toast.error("Could Not Remove The Course From Cart")
   }
   toast.dismiss(loading)
   return result

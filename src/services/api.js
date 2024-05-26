@@ -17,7 +17,9 @@ export const profile ={
     UPLOAD_PROFILE_PIC : BASE_URL+"/profile/updateDisplayPicture",
     DELETE_ACCOUNT : BASE_URL+"/profile/deleteProfile",
     CHANGE_PASSWORD : BASE_URL+"/auth/changepassword",
-    GET_ENROLLED_COURSES : BASE_URL+"/profile/getEnrolledCourses"
+    GET_ENROLLED_COURSES : BASE_URL+"/profile/getEnrolledCourses",
+    ADD_TO_CART : BASE_URL+"/profile/addToCart",
+    REMOVE_FROM_CART : BASE_URL+"/profile/removeFromCart",
 }
 
 export const courseEndpoints = {
@@ -38,3 +40,9 @@ export const courseEndpoints = {
     LECTURE_COMPLETION_API: BASE_URL + "/course/updateCourseProgress",
     CREATE_RATING_API: BASE_URL + "/course/createRating",
   }
+
+export const paymentEndpoints = {
+    CAPTURE_PAYMENT: BASE_URL + "/payment/capturePayment",
+    VERIFY_SIGNATURE: BASE_URL + "/payment/verifySignature",
+    SEND_PAYMENT_SUCCESS_EMAIL: BASE_URL + "/payment/success",
+}

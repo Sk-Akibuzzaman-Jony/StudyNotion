@@ -1,6 +1,8 @@
 const Profile = require("../model/Profile");
 const User = require("../model/Users");
+const courseProgress = require("../model/CourseProgress");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
+const { default: mongoose } = require("mongoose");
 
 exports.updateProfile = async (req, res) => {
     try{
@@ -118,12 +120,14 @@ exports.getAllUserDetails = async (req, res) => {
 exports.getEnrolledCourses = async(req, res) => {
     try {
         const userId = req.user.id;
-        const courses = User.findById(userId).populate("courses").courses;
-
+        const uid = new mongoose.Types.ObjectId(userId);
+        const user = await User.findById(userId).populate("courses").populate("courseProgress");
+        console.log(user);
         return res.status(200).json({
             success:true,
             message:"Fetched all enrolled Courses",
-            courses,
+            courses:user.courses,
+            courseProgress:user.courseProgress,
         })
     } catch (error) {
         return res.status(200).json({
@@ -162,3 +166,87 @@ exports.updateDisplayPicture = async (req, res) => {
       })
     }
 };
+
+exports.addToCart = async (req, res) => {
+    try {
+        const { courseId } = req.body;
+        const userId = req.user?.id;
+
+        if (!courseId || !userId) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all the fields",
+            });
+        }
+
+        const uid = new mongoose.Types.ObjectId(userId);
+        const cid = new mongoose.Types.ObjectId(courseId);
+
+        const user = await User.findByIdAndUpdate(
+            uid,
+            { $push: { cart: cid } },
+            { new: true } 
+        );
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Course added to cart",
+            user, 
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+exports.removeFromCart = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const { courseId } = req.body;
+
+        if (!userId || !courseId) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all the fields",
+            });
+        }
+
+        const uid = new mongoose.Types.ObjectId(userId);
+        const cid = new mongoose.Types.ObjectId(courseId);
+
+        const user = await User.findByIdAndUpdate(
+            uid,
+            { $pull: { cart: cid } },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Course removed from cart",
+            user,
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+

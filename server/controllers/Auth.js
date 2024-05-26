@@ -162,6 +162,7 @@ exports.signUp = async(req, res) => {
 
 //login
 exports.login = async(req, res) => {
+    console.log("Hello From Login");
     try {
         // get data from req body
         const {email, password} = req.body;

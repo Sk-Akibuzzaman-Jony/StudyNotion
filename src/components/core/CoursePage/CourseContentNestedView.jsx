@@ -1,18 +1,46 @@
 import React from "react";
-import { RxDropdownMenu } from "react-icons/rx";
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
+} from "@material-tailwind/react";
 import { VscDebugBreakpointLog } from "react-icons/vsc";
 
-const CourseContentNestedView = ({ section }) => {
+function Icon({ open }) {
   return (
-    <div>
-      <div className="text-richblack-25 flex justify-between gap-3 font-bold text-lg border border-richblack-500 rounded-2xl">
-        <details key={section._id} open className="w-full">
-          <summary className="flex justify-between items-center bg-richblack-700 px-2 py-3 rounded-2xl">
-            <div className="flex gap-2 items-center ">
-              <RxDropdownMenu className="text-3xl" />
-              {section.sectionName}
-            </div>{" "}
-          </summary>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className={`${open ? "rotate-180" : ""} h-5 w-5 transition-transform`}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  );
+}
+
+const CourseContentNestedView = ({ section }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => setOpen(!open);
+
+  return (
+    <div className="text-richblack-25 flex justify-between gap-3 font-bold text-lg rounded-2xl border border-richblack-800">
+      <Accordion open={open}>
+        <AccordionHeader
+          onClick={handleOpen}
+          className={`px-2 bg-richblack-700 ${
+            open ? "rounded-t-2xl" : "rounded-2xl"
+          }`}
+        >
+          <div className="flex gap-2 items-center px-3 w-full justify-between">
+            {section.sectionName}
+            <Icon open={open} />
+          </div>
+        </AccordionHeader>
+        <AccordionBody className="bg-richblack-800 rounded-b-2xl">
           {section?.subSection?.map((subSec, index) => (
             <div
               key={index}
@@ -25,8 +53,8 @@ const CourseContentNestedView = ({ section }) => {
               <div></div>
             </div>
           ))}
-        </details>
-      </div>
+        </AccordionBody>
+      </Accordion>
     </div>
   );
 };

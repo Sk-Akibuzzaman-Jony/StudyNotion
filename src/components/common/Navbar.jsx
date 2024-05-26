@@ -12,6 +12,7 @@ import { useState } from 'react'
 import Dropdown from './Dropdown'
 import ProfileDropdown from './ProfileDropdown'
 import { fetchCourseCategories } from '../../services/operations/courseDetailsAPI'
+import { ACCOUNT_TYPE } from '../../utils/constants'
 
 const Navbar = () => {
     const { token } = useSelector((state) => state.auth);
@@ -58,11 +59,11 @@ const Navbar = () => {
 
 
                 {/* Login/SignUp/Dashboard */}
-                <div className='flex gap-x-4 items-center'>
+                <div className='flex gap-5'>
 
                     {
-                        user && user?.accountType != "Instructor" && (
-                            <Link to="/dashboard/cart" className='relative'>
+                        user && user?.accountType != ACCOUNT_TYPE.INSTRUCTOR && (
+                            <Link to="/dashboard/cart" className='relative text-richblack-300 text-2xl'>
                                 <AiOutlineShoppingCart />
                                 {
                                     totalItems > 0 && (

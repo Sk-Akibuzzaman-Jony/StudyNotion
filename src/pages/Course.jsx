@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { fetchCourseDetails } from "../services/operations/courseDetailsAPI";
 import StarRatings from "react-star-ratings";
 import CourseContentNestedView from "../components/core/CoursePage/CourseContentNestedView";
@@ -8,9 +8,20 @@ import { TiStopwatch } from "react-icons/ti";
 import { RiCursorLine } from "react-icons/ri";
 import { FaMobileScreenButton } from "react-icons/fa6";
 import { HiOutlineDocumentCheck } from "react-icons/hi2";
+import { useDispatch, useSelector } from "react-redux";
+import { displayRazorpay } from "../services/operations/paymentAPI";
+import toast from "react-hot-toast";
+import { formatDate } from "../utils/formatDate";
+import { ACCOUNT_TYPE } from "../utils/constants";
+import { setUser } from "../slices/profileSlice";
+import { addToCart } from "../services/operations/profileApi";
 
 const Course = () => {
   const { courseId } = useParams();
+  const { user } = useSelector((state) => state.profile);
+  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [courseDetails, setCourseDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const getAvgRating = (ratingAndReviews = []) => {
@@ -29,15 +40,52 @@ const Course = () => {
       if (result) {
         setCourseDetails(result.data);
         setLoading(false);
-        console.log(result.data);
+        //console.log(result.data);
       }
     };
     getCourseDetails();
   }, [courseId]);
 
+  const handleBuyCourse = () => {
+    if (token) {
+      displayRazorpay([courseId], user, token, navigate, dispatch);
+      return;
+    } else {
+      toast.error("Please Login To Buy the course");
+    }
+  };
+
+  const copyToClipboard = () => {
+    const currentPath = window.location.href;
+    navigator.clipboard
+      .writeText(currentPath)
+      .then(() => {
+        toast.success("Copied Link To Clipboard");
+      })
+      .catch((error) => {
+        //console.error("Error copying to clipboard:", error);
+        toast.error("Failed to copy link to clipboard");
+      });
+  };
+
+  const handleAddToCart = async () => {
+    if(token){
+      if(user && user?.accountType === ACCOUNT_TYPE.INSTRUCTOR){
+        toast.error("You are an instructor, you can't buy a course");
+      }
+      const newUser = await addToCart(courseDetails._id, token);
+      console.log(newUser);
+      if(newUser){
+        dispatch(setUser(newUser));
+      }
+    } else {
+      toast.error("Login to add the course to cart");
+    }
+  }
+
   return (
     <div className="text-richblack-5 mx-auto">
-      <div className=''>
+      <div className="">
         <div className="bg-richblack-700 pt-5 pb-10">
           <div className="w-11/12 mx-auto">
             <div className="flex">
@@ -72,6 +120,9 @@ const Course = () => {
                   Created By {courseDetails?.instructor?.firstName}{" "}
                   {courseDetails?.instructor?.lastName}
                 </div>
+                {courseDetails?.createdAt && (
+                  <div>Created At {formatDate(courseDetails?.createdAt)}</div>
+                )}
               </div>
             </div>
           </div>
@@ -119,18 +170,35 @@ const Course = () => {
                 </div>
               </div>
             </div>
-            <div className="-translate-y-[35%] bg-richblack-700">
-              <img src={courseDetails?.thumbnail} alt="course thumbnail" />
+            <div className="-translate-y-[35%] bg-richblack-700 w-[30%] rounded-3xl">
+              <img
+                src={courseDetails?.thumbnail}
+                alt="course thumbnail"
+                className="rounded-t-3xl"
+              />
               <div className=" py-10 px-5 flex flex-col">
                 <div className=" text-2xl font-bold">
                   ₹ {courseDetails?.price}
                 </div>
-                <button className="mt-7">
-                  <Button active={true}>Add To Cart</Button>
-                </button>
-                <button className="mt-5">
-                  <Button active={false}>Buy Now</Button>
-                </button>
+                {user &&
+                courseDetails?.studentsEnrolled &&
+                courseDetails.studentsEnrolled.includes(user._id) ? (
+                  <button
+                    className="mt-7"
+                    onClick={() => navigate("/dashboard/enrolled-courses")}
+                  >
+                    <Button active={true}>Go To Course</Button>
+                  </button>
+                ) : (
+                  <div className="flex flex-col">
+                    <button className="mt-7" onClick={handleAddToCart}>
+                      <Button active={true} >Add To Cart</Button>
+                    </button>
+                    <button className="mt-5" onClick={handleBuyCourse}>
+                      <Button active={false}>Buy Now</Button>
+                    </button>
+                  </div>
+                )}
                 <div className="mx-auto mt-3 text-richblack-300">
                   30-Day Money-Back Guarantee
                 </div>
@@ -154,7 +222,13 @@ const Course = () => {
                     </li>
                   </ul>
                   <div className="text-yellow-50 hover:text-yellow-25 font-bold text-center mt-5">
-                    <button>Share</button>
+                    <button
+                      onClick={() => {
+                        copyToClipboard()
+                      }}
+                    >
+                      Share
+                    </button>
                   </div>
                 </div>
               </div>
