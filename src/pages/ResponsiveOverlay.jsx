@@ -26,7 +26,7 @@ const ResponsiveOverlay = () => {
     if (!showOverlay) return null;
 
     return (
-        <div className="absolute bg-richblack-900 h-screen z-10">
+        <div className="absolute bg-richblack-900 h-screen z-50">
             <div className="relative top-1/3 text-center">
                 <div className='mb-10'>
                     <TbMoodSad className='text-yellow-25 mx-auto text-9xl' />
