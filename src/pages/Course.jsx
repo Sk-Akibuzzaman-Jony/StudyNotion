@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 import { formatDate } from "../utils/formatDate";
 import { ACCOUNT_TYPE } from "../utils/constants";
 import { setUser } from "../slices/profileSlice";
-import { addToCart } from "../services/operations/profileApi";
+import { addToCart, removeFromCart } from "../services/operations/profileApi";
 
 const Course = () => {
   const { courseId } = useParams();
@@ -40,7 +40,7 @@ const Course = () => {
       if (result) {
         setCourseDetails(result.data);
         setLoading(false);
-        //console.log(result.data);
+        console.log(result.data);
       }
     };
     getCourseDetails();
@@ -69,13 +69,13 @@ const Course = () => {
   };
 
   const handleAddToCart = async () => {
-    if(token){
-      if(user && user?.accountType === ACCOUNT_TYPE.INSTRUCTOR){
+    if (token) {
+      if (user && user?.accountType === ACCOUNT_TYPE.INSTRUCTOR) {
         toast.error("You are an instructor, you can't buy a course");
       }
       const newUser = await addToCart(courseDetails._id, token);
       console.log(newUser);
-      if(newUser){
+      if (newUser) {
         dispatch(setUser(newUser));
       }
     } else {
@@ -83,6 +83,20 @@ const Course = () => {
     }
   }
 
+  const handleRemoveFromCart = async () => {
+    const newUser = await removeFromCart(courseDetails._id, token);
+    console.log(newUser);
+    if(newUser){
+        dispatch(setUser(newUser));
+    } 
+  }
+
+  const isCourseInCart = user?.cart.some(cartCourse => cartCourse._id === courseDetails._id);
+
+  if (loading) {
+    return <div className="mt-36"><div className="loader"></div></div>;
+  }
+  
   return (
     <div className="text-richblack-5 mx-auto">
       <div className="">
@@ -102,7 +116,7 @@ const Course = () => {
                   ) : (
                     <div className="text-yellow-50 flex gap-2">
                       <div className="pt-[3px]">
-                        {getAvgRating(courseDetails?.ratingAndReviews)}
+                        {getAvgRating(courseDetails?.ratingAndReviews).toFixed(1)}
                       </div>
                       <StarRatings
                         rating={getAvgRating(courseDetails?.ratingAndReviews)}
@@ -141,10 +155,12 @@ const Course = () => {
                 {loading ? (
                   <div>Loading...</div>
                 ) : (
-                  courseDetails?.courseContent?.map((section) => (
+                  courseDetails?.courseContent?.map((section, index, array) => (
                     <CourseContentNestedView
                       key={section._id}
                       section={section}
+                      isFirst={index === 0}
+                      isLast={index === array.length - 1}
                     />
                   ))
                 )}
@@ -162,7 +178,7 @@ const Course = () => {
                     {courseDetails?.instructor?.lastName}
                   </div>
                 </div>
-                <div className="mt-2 text-richblack-200">
+                <div className="mt-2 text-richblack-200 mb-36">
                   I will be your lead trainer in this course. Within no time, I
                   will help you to understand the subject in an easy manner. I
                   have a huge experience in online training and recording
@@ -170,7 +186,7 @@ const Course = () => {
                 </div>
               </div>
             </div>
-            <div className="-translate-y-[35%] bg-richblack-700 w-[30%] rounded-3xl">
+            <div className="-translate-y-[35%] bg-richblack-700 w-[30%] rounded-3xl h-fit">
               <img
                 src={courseDetails?.thumbnail}
                 alt="course thumbnail"
@@ -181,8 +197,8 @@ const Course = () => {
                   ₹ {courseDetails?.price}
                 </div>
                 {user &&
-                courseDetails?.studentsEnrolled &&
-                courseDetails.studentsEnrolled.includes(user._id) ? (
+                  courseDetails?.studentsEnrolled &&
+                  courseDetails.studentsEnrolled.includes(user._id) ? (
                   <button
                     className="mt-7"
                     onClick={() => navigate("/dashboard/enrolled-courses")}
@@ -191,9 +207,15 @@ const Course = () => {
                   </button>
                 ) : (
                   <div className="flex flex-col">
-                    <button className="mt-7" onClick={handleAddToCart}>
-                      <Button active={true} >Add To Cart</Button>
-                    </button>
+                    {isCourseInCart ? (
+                      <button className="mt-7" onClick={handleRemoveFromCart}>
+                        <Button active={false} >Remove From Cart</Button>
+                      </button>
+                    ) : (
+                      <button className="mt-7" onClick={handleAddToCart}>
+                        <Button active={true} >Add To Cart</Button>
+                      </button>
+                    )}
                     <button className="mt-5" onClick={handleBuyCourse}>
                       <Button active={false}>Buy Now</Button>
                     </button>

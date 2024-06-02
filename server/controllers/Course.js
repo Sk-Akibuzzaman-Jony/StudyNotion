@@ -5,6 +5,8 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 const Users = require("../model/Users");
 const Section = require("../model/Section");
 const SubSection = require("../model/SubSection");
+const CourseProgress = require("../model/CourseProgress");
+const { default: mongoose } = require("mongoose");
 
 // Function to create a new course
 exports.createCourse = async (req, res) => {
@@ -223,12 +225,24 @@ exports.editCourse = async (req, res) => {
   }
 };
 
-//getCourseDetails
-exports.getCourseDetails = async (req, res) => {
+//getCourseDetails authenticated (for viewing the course by student)
+exports.getCourseDetailsAuth = async (req, res) => {
   try {
     //get id
     const { courseId } = req.body;
+    const id = req.user?.id;
     console.log("courseId from getCourseDetails -> ", courseId);
+
+    //check if student is enrolled in this course
+    const isCoursePresent = User.courses.some(course => course._id.toString() === courseId);
+
+    if (!isCoursePresent) {
+      return res.status(400).json({
+        success: false,
+        message: `User is not enrolled in the course with ID ${courseId}`,
+      });
+    }
+
     //find course details
     const courseDetails = await Course.findOne({
       _id: courseId,
@@ -271,6 +285,56 @@ exports.getCourseDetails = async (req, res) => {
   }
 };
 
+//get course details for only over-viewing the course
+exports.getCourseDetails = async (req, res) => {
+  try {
+    //get id
+    const { courseId } = req.body;
+    const id = req.user?.id;
+    console.log("courseId from getCourseDetails -> ", courseId);
+    //find course details
+    const courseDetails = await Course.findOne({
+      _id: courseId,
+    })
+      .populate({
+        path: "instructor",
+        populate: {
+          path: "additionalDetails",
+        },
+      })
+      .populate("category")
+      .populate("ratingAndReviews")
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+          select: '-videoUrl',
+        },
+      })
+      .exec();
+    console.log(courseDetails);
+    //validation
+    if (!courseDetails) {
+      return res.status(400).json({
+        success: false,
+        message: `Could not find the course with ${courseId}`,
+      });
+    }
+    //return response
+    return res.status(200).json({
+      success: true,
+      message: "Course Details fetched successfully",
+      data: courseDetails,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
 exports.getInstructorCourses = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -305,7 +369,7 @@ exports.getInstructorCourses = async (req, res) => {
 exports.deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.body;
-
+    const instrucId = req?.user?.id;
     //unenroll the students from this course
     const course = await Course.findById(courseId);
     for (const studentsId of course.studentsEnrolled) {
@@ -325,6 +389,10 @@ exports.deleteCourse = async (req, res) => {
       }
     }
 
+    //also pull the course from the instructor account
+    const instructorId = new mongoose.Types.ObjectId(instrucId);
+    await Course.findByIdAndUpdate( instructorId , { $pull: { courses: courseId } })
+
     await Course.findByIdAndDelete(courseId);
 
     return res.status(200).json({
@@ -339,3 +407,88 @@ exports.deleteCourse = async (req, res) => {
   }
 };
 
+exports.markLectureAsComplete = async (req, res) => {
+  try {
+    const { courseId, subSectionId } = req.body;
+    const userId = req?.user?.id;
+    if (!userId || !courseId || !subSectionId) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide all the fields",
+      });
+    }
+
+    const cid = new mongoose.Types.ObjectId(courseId);
+    const sid = new mongoose.Types.ObjectId(subSectionId);
+    const uid = new mongoose.Types.ObjectId(userId);
+
+    let progress = await CourseProgress.findOne({ courseID: cid, userID: userId });
+    if (progress) {
+      if (!progress.completedVideos.includes(sid)) {
+        progress = await CourseProgress.findOneAndUpdate(
+          { courseID: cid, userID: uid },
+          { $push: { completedVideos: sid } },
+          { new: true }
+        );
+      }
+    } else {
+      progress = new CourseProgress({
+        userID: uid,
+        courseID: cid,
+        completedVideos: [sid],
+      });
+      await progress.save();
+      // push the newly created progress into user
+      const pid = new mongoose.Types.ObjectId(progress._id);
+      await User.findOneAndUpdate({ _id: userId }, { $push: { courseProgress: pid } });
+    }
+
+    return res.status(200).json({
+      success: true,
+      progress,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getCourseProgress = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const userId = req?.user?.id;
+    if (!userId || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide all the fields",
+      });
+    }
+
+    //if course progress is present
+    const cid = new mongoose.Types.ObjectId(courseId);
+    const uid = new mongoose.Types.ObjectId(userId);
+    let progress = await CourseProgress.findOne({ courseID: courseId, userID: userId });
+
+    if (progress) {
+      return res.status(200).json({
+        success: true,
+        progress,
+      })
+    } else {
+      return res.status(200).json({
+        success: true,
+        progress: {},
+      })
+    }
+
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}

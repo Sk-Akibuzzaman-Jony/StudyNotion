@@ -35,4 +35,69 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.loader {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  color: #FFF;
+  box-sizing: border-box;
+  animation: animloader 1s linear infinite alternate;
+  
+}
+
+@keyframes animloader {
+  0% {
+    box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
+  }
+  33% {
+    box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
+  }
+  66% {
+    box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
+  }
+  100% {
+    box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
+  }
+}
+
+.loader-button {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loader-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-right: 2px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: loader 0.8s linear infinite;
+}
+
+@keyframes loader {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
 

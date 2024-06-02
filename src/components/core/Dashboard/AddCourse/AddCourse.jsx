@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FaCheckCircle } from "react-icons/fa";
 import CourseBuilderForm from "./CourseBuilderForm";
 import CourseInformationForm from "./CourseInformationForm";
 import PublishForm from "./PublishForm";
 import { BsLightningChargeFill } from "react-icons/bs";
+import { setEditCourse } from "../../../../slices/courseSlice";
+import { useLocation } from "react-router-dom";
 
 
 const AddCourse = () => {
@@ -27,11 +29,18 @@ const AddCourse = () => {
     },
   ];
   const dispatch = useDispatch();
+  const location = useLocation();
 
+  useEffect(() => {
+    dispatch(setEditCourse(false));
+  }, []); 
+  
   return (
     <div className="flex">
       <div className="w-8/12 mx-auto text-white">
+      <h1 className="text-3xl font-bold mb-10">Add Course</h1>
         <div className="flex justify-between w-9/12 mx-auto">
+        
           {steps.map((step, index) => (
             <div key={index}>
               {courseDetails.step > step.number ? (

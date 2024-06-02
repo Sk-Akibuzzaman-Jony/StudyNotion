@@ -5,7 +5,7 @@ import { apiConnector } from "../apiconnector";
 const {GET_CATEGORY_PAGE_DETAILS} = categories;
 
 export const getFullCategoryDetails = async (categoryId) => {
-    const toastId = toast.loading("Loading...");
+    //const toastId = toast.loading("Loading...");
     let result = [];
     console.log("categoryId -> ", categoryId);
     try {
@@ -18,8 +18,8 @@ export const getFullCategoryDetails = async (categoryId) => {
       result = response?.data;
     } catch (error) {
       console.log("GET_CATEGORY_PAGE_DETAILS API ERROR............", error);
-      toast.error(error.message);
+      //toast.error(error.message);
     }
-    toast.dismiss(toastId);
+    //toast.dismiss(toastId);
     return result;
   };

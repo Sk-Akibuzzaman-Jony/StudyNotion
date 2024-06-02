@@ -5,19 +5,13 @@ import { NavbarLinks } from "../../data/navbar-links"
 import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { AiOutlineShoppingCart } from "react-icons/ai"
-//import ProfileDropDown from '../core/Auth/ProfileDropDown'
-import { apiConnector } from '../../services/apiconnector'
-import { categories } from '../../services/api'
-import { useState } from 'react'
 import Dropdown from './Dropdown'
 import ProfileDropdown from './ProfileDropdown'
-import { fetchCourseCategories } from '../../services/operations/courseDetailsAPI'
 import { ACCOUNT_TYPE } from '../../utils/constants'
 
 const Navbar = () => {
     const { token } = useSelector((state) => state.auth);
     const { user } = useSelector((state) => state.profile);
-    const { totalItems } = useSelector((state) => state.cart)
     const location = useLocation();
 
     const matchRoute = (route) => {
@@ -63,13 +57,13 @@ const Navbar = () => {
 
                     {
                         user && user?.accountType != ACCOUNT_TYPE.INSTRUCTOR && (
-                            <Link to="/dashboard/cart" className='relative text-richblack-300 text-2xl'>
+                            <Link to="/dashboard/cart" className='relative text-richblack-300 text-3xl flex'>
                                 <AiOutlineShoppingCart />
                                 {
-                                    totalItems > 0 && (
-                                        <span>
-                                            {totalItems}
-                                        </span>
+                                    user?.cart.length > 0 && (
+                                        <div className='text-xs bg-red-200 px-2 py-1 h-fit rounded-full -translate-x-2 -translate-y-2 text-white'>
+                                            {user?.cart.length}
+                                        </div>
                                     )
                                 }
                             </Link>

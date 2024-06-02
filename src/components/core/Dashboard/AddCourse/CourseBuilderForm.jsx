@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCourse,
@@ -13,6 +13,7 @@ import { createSection, updateSection } from "../../../../services/operations/co
 const CourseBuilderForm = () => {
   const { editCourse, course } = useSelector((state) => state.course);
   const { token } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const handleNextStep = () => {
     dispatch(setStep(3));
@@ -36,6 +37,7 @@ const CourseBuilderForm = () => {
   }, [editCourse, setValue]);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     if (!editCourse) {
       data = { ...data, courseId: course._id };
       const result = await createSection(data, token);
@@ -51,6 +53,7 @@ const CourseBuilderForm = () => {
       }
       dispatch(setEditCourse(null));
     }
+    setLoading(false);
   };
 
   return (
@@ -78,8 +81,9 @@ const CourseBuilderForm = () => {
               )}
               <input
                 type="submit"
-                className="text-center text-[13px] px-6 py-3 rounded-md font-bold bg-yellow-50 text-black hover:scale-95 transition-all duration-2000 mt-5 mb-5"
+                className={`text-center text-[13px] px-6 py-3 rounded-md font-bold ${loading ? ('bg-richblack-500') : ('bg-yellow-50')} text-black hover:scale-95 transition-all duration-2000 mt-5 mb-5`}
                 value={editCourse ? "save changes" : "Add Section"}
+                disabled={loading}
               />
               {editCourse && (<button onClick={()=>{dispatch(setEditCourse(null)); setValue('sectionName', '');}} className="bg-richblack-500 w-content text-[13px] mt-5 mb-5 px-6 py-3 rounded-md font-bold hover:scale-95 transition-all duration-2000">Cancel</button>)}
               

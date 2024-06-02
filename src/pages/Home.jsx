@@ -9,6 +9,7 @@ import LearningLanguageSection from '../components/core/HomePage/LearningLanguag
 import InstructorSection from '../components/core/HomePage/InstructorSection';
 import Footer from '../components/common/Footer';
 import ExploreMore from '../components/core/HomePage/ExploreMore';
+import ReviewSwipper from '../components/common/ReviewSwipper';
 
 const Home = () => {
     return (
@@ -160,6 +161,12 @@ const Home = () => {
             
             <div className='w-11/12 flex flex-col items-center mt-14 mx-auto text-white'>
                 <InstructorSection/>
+            </div>
+            <div>
+                <div className='text-3xl mt-5 text-richblack-25 text-center'>
+                    Rating and Reviews
+                </div>
+                <ReviewSwipper/>
             </div>
             <div className='pt-44'>
                 <Footer/>

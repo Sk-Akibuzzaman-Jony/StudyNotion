@@ -3,15 +3,20 @@ import { Link } from "react-router-dom";
 import StarRatings from "react-star-ratings";
 
 const CourseCard = ({ course }) => {
-  console.log(course);
   const getAvgRating = (ratingAndReviews) => {
-    if (ratingAndReviews.length === 0) return 0;
+    if (!Array.isArray(ratingAndReviews) || ratingAndReviews.length === 0) {
+      return 0;
+    }
     const avgRating =
       ratingAndReviews.reduce(
-        (accumulator, rating) => (accumulator + rating?.rating, 0)
-      ) / ratingAndReviews.length();
+        (accumulator, current) => accumulator + (current.rating || 0),
+        0
+      ) / ratingAndReviews.length;
     return avgRating;
   };
+
+  const averageRating = getAvgRating(course?.ratingAndReviews);
+
   return (
     <div className="">
       <Link to={`/course/${course._id}`}>
@@ -27,15 +32,15 @@ const CourseCard = ({ course }) => {
           {course?.instructor?.firstName} {course?.instructor?.lastName}
         </div>
         <div className='mt-2'>
-          {course?.ratingAndReviews.length === 0 ? (
+          {course?.ratingAndReviews?.length === 0 ? (
             <div className="text-richblack-100 text-sm">No Ratings Yet</div>
           ) : (
-            <div className="text-yellow-50  flex gap-2">
+            <div className="text-yellow-50 flex gap-2">
               <div className="pt-[3px]">
-                {getAvgRating(course?.ratingAndReviews)}
+                {averageRating.toFixed(1)}
               </div>
               <StarRatings
-                rating={getAvgRating(course?.ratingAndReviews)}
+                rating={parseFloat(averageRating.toFixed(1))}
                 starDimension="20px"
                 starSpacing="2px"
                 starRatedColor="#FFD60A"

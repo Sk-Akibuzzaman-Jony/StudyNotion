@@ -20,6 +20,7 @@ const {
   GET_FULL_COURSE_DETAILS_AUTHENTICATED,
   CREATE_RATING_API,
   LECTURE_COMPLETION_API,
+  GET_COURSE_PROGRESS_API
 } = courseEndpoints;
 
 export const getAllCourses = async () => {
@@ -40,7 +41,7 @@ export const getAllCourses = async () => {
 };
 
 export const fetchCourseDetails = async (courseId) => {
-  const toastId = toast.loading("Loading...");
+  //const toastId = toast.loading("Loading...");
   //   dispatch(setLoading(true));
   let result = null;
   try {
@@ -58,7 +59,7 @@ export const fetchCourseDetails = async (courseId) => {
     result = error.response.data;
     // toast.error(error.response.data.message);
   }
-  toast.dismiss(toastId);
+  //toast.dismiss(toastId);
   //   dispatch(setLoading(false));
   return result;
 };
@@ -260,7 +261,7 @@ export const deleteSubSection = async (data, token) => {
 // fetching all courses under a specific instructor
 export const fetchInstructorCourses = async (token) => {
   let result = [];
-  const toastId = toast.loading("Loading...");
+  //const toastId = toast.loading("Loading...");
   try {
     const response = await apiConnector(
       "GET",
@@ -279,7 +280,7 @@ export const fetchInstructorCourses = async (token) => {
     console.log("INSTRUCTOR COURSES API ERROR............", error);
     toast.error(error.message);
   }
-  toast.dismiss(toastId);
+  //toast.dismiss(toastId);
   return result;
 };
 
@@ -288,7 +289,7 @@ export const deleteCourse = async (data, token) => {
   const toastId = toast.loading("Loading...");
   let response = [];
   try {
-      response = await apiConnector("DELETE", DELETE_COURSE_API, data, {
+    response = await apiConnector("DELETE", DELETE_COURSE_API, data, {
       Authorization: `Bearer ${token}`,
     });
     console.log("DELETE COURSE API RESPONSE............", response);
@@ -306,7 +307,7 @@ export const deleteCourse = async (data, token) => {
 
 // get full details of a course
 export const getFullDetailsOfCourse = async (data, token) => {
-  const toastId = toast.loading("Loading...");
+  //const toastId = toast.loading("Loading...");
   //   dispatch(setLoading(true));
   let result = null;
   //console.log("courseId from getFullDetailsOfCourse", courseId);
@@ -330,7 +331,7 @@ export const getFullDetailsOfCourse = async (data, token) => {
     result = error.response.data;
     // toast.error(error.response.data.message);
   }
-  toast.dismiss(toastId);
+  //toast.dismiss(toastId);
   //   dispatch(setLoading(false));
   return result;
 };
@@ -349,11 +350,11 @@ export const markLectureAsComplete = async (data, token) => {
       response
     );
 
-    if (!response.data.message) {
+    if (!response.data.success) {
       throw new Error(response.data.error);
     }
     toast.success("Lecture Completed");
-    result = true;
+    result = response?.data?.progress;
   } catch (error) {
     console.log("MARK_LECTURE_AS_COMPLETE_API API ERROR............", error);
     toast.error(error.message);
@@ -380,8 +381,31 @@ export const createRating = async (data, token) => {
   } catch (error) {
     success = false;
     console.log("CREATE RATING API ERROR............", error);
-    toast.error(error.message);
+    toast.error(error?.response?.data?.message);
   }
   toast.dismiss(toastId);
   return success;
 };
+
+export const getCourseProgress = async (data, token) => {
+  //const toastId = toast.loading("Loading...");
+  let success = false;
+  try {
+    const response = await apiConnector("POST", GET_COURSE_PROGRESS_API, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    console.log("GET COURSE PROGRESS API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could Not Get Course Progress");
+    } else {
+      //toast.dismiss(toastId);
+      return response?.data?.progress;
+    }
+  } catch (error) {
+    success = false;
+    console.log("GET_COURSE_PROGRESS_API ERROR............", error);
+    toast.error(error?.response?.data?.message);
+  }
+  //toast.dismiss(toastId);
+  return success;
+}

@@ -23,10 +23,11 @@ exports.createRating = async (req, res) => {
             });
         }
         //check if user already reviewed the course
-        const alreadyReviewed = await RatingAndReview.findOne({
-                                                user:userId,
-                                                course:courseId,
-                                            });
+        const course = await Course.findById({_id:courseId}).populate('ratingAndReviews')
+        const uid = new mongoose.Types.ObjectId(userId);
+        const alreadyReviewed = course.ratingAndReviews.some(review => review.user.equals(uid));
+        // console.log("Rating and reviews -> ", course.ratingAndReviews);
+        // console.log("uid -> ", uid);
         if(alreadyReviewed) {
                     return res.status(403).json({
                         success:false,
@@ -124,10 +125,6 @@ exports.getAllRating = async (req, res) => {
                                     .populate({
                                         path:"user",
                                         select:"firstName lastName email image",
-                                    })
-                                    .populate({
-                                        path:"course",
-                                        select: "courseName",
                                     })
                                     .exec();
             return res.status(200).json({

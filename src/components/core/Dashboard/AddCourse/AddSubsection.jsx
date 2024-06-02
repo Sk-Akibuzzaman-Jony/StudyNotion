@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { setCourse, setEditCourse, setEditSubsection } from "../../../../slices/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createSubSection,
-  updateSubSection,
-} from "../../../../services/operations/courseDetailsAPI";
+import { createSubSection, updateSubSection } from "../../../../services/operations/courseDetailsAPI";
 import { GoPlusCircle } from "react-icons/go";
 import { Link } from "react-router-dom";
 
@@ -14,6 +11,7 @@ const AddSubsection = ({ section }) => {
   const [existingVideo, setExistingVideo] = useState(null);
   const { token } = useSelector((state) => state.auth);
   const { course, editSubsection } = useSelector((state) => state.course);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {
     register,
@@ -35,7 +33,6 @@ const AddSubsection = ({ section }) => {
       setValue("title", editSubsection.title);
       setValue("description", editSubsection.description);
       setExistingVideo(editSubsection.videoUrl);
-      //console.log("Printing Existing Video -> ", editSubsection);
     } else if (!editSubsection){
       setValue("title", "");
       setValue("description", "");
@@ -63,42 +60,48 @@ const AddSubsection = ({ section }) => {
   };
 
   const onSubmit = async (data) => {
-    //console.log("Video Arr -> ", data.videoFile);
-    const videoFile = data.videoFile[0] || existingVideo;
-    const duration = await getVideoDuration(videoFile);
-    const formData = new FormData();
-    formData.append("sectionId", section._id);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("videoFile", videoFile);
-    formData.append("timeDuration", duration);
-    formData.append("courseId", course._id);
+    setLoading(true); 
+    try {
+      const videoFile = data.videoFile[0] || existingVideo;
+      const duration = await getVideoDuration(videoFile);
+      const formData = new FormData();
+      formData.append("sectionId", section._id);
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("videoFile", videoFile);
+      formData.append("timeDuration", duration);
+      formData.append("courseId", course._id);
 
-    if (!editSubsection) {
-      const result = await createSubSection(formData, token);
-      if (result) {
-        dispatch(setCourse(result));
-        console.log(result);
+      if (!editSubsection) {
+        const result = await createSubSection(formData, token);
+        if (result) {
+          dispatch(setCourse(result));
+          console.log(result);
+        }
+      } else {
+        formData.append("subSectionID", editSubsection._id);
+        const result = await updateSubSection(formData, token);
+        if (result) {
+          dispatch(setCourse(result));
+          console.log(result);
+          dispatch(setEditCourse(null));
+        }
       }
-    } else {
-      formData.append("subSectionID", editSubsection._id);
-      const result = await updateSubSection(formData, token);
-      if (result) {
-        dispatch(setCourse(result));
-        console.log(result);
-        dispatch(setEditCourse(null));
-      }
+    } catch (error) {
+      console.error("Error while submitting form: ", error);
+    } finally {
+      setLoading(false);
+      setIsModalOpen(false);
     }
-
-    setIsModalOpen(false);
   };
 
   return (
     <div>
       <button
         onClick={toggleModal}
-        className="flex items-center gap-2 text-center text-[13px] px-6 py-2 rounded-md font-bold bg-yellow-800 text-richblack-100 border border-yellow-50 hover:scale-95 transition-all duration-200"
+        className={`flex items-center gap-2 text-center text-[13px] px-6 py-2 rounded-md font-bold bg-yellow-800 text-richblack-100 border border-yellow-50 hover:scale-95 transition-all duration-200`}
         type="button"
+        disabled={loading} // Disable button during loading
       >
         <GoPlusCircle className="text-2xl text-yellow-50" />
         Add Subsection
@@ -121,6 +124,7 @@ const AddSubsection = ({ section }) => {
                   type="button"
                   onClick={toggleModal}
                   className="text-richblack-25 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  disabled={loading} // Disable button during loading
                 >
                   <svg
                     className="w-3 h-3"
@@ -155,6 +159,7 @@ const AddSubsection = ({ section }) => {
                       {...register("title", { required: "Title is required" })}
                       className="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600"
                       placeholder="Enter Subsection Title"
+                      disabled={loading} // Disable input during loading
                     />
                     {errors.title && (
                       <p className="text-red-500 mt-1">
@@ -178,6 +183,7 @@ const AddSubsection = ({ section }) => {
                       rows="4"
                       className="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600"
                       placeholder="Write product description here"
+                      disabled={loading} // Disable input during loading
                     ></textarea>
                     {errors.description && (
                       <p className="text-red-500 mt-1">
@@ -213,6 +219,7 @@ const AddSubsection = ({ section }) => {
                       id="videoFile"
                       {...register("videoFile")}
                       className="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600"
+                      disabled={loading} // Disable input during loading
                     />
                     {errors.videoFile && (
                       <p className="text-red-500 mt-1">
@@ -223,20 +230,9 @@ const AddSubsection = ({ section }) => {
                 </div>
                 <button
                   type="submit"
-                  className="flex items-center text-center text-[13px] px-6 py-3 rounded-md font-bold bg-yellow-50 text-black hover:scale-95 transition-all duration-200"
+                  className={`flex items-center text-center text-[13px] px-6 py-3 rounded-md font-bold bg-yellow-50 text-black hover:scale-95 transition-all duration-200 ${loading ? "loader-button" : ""}`}
+                  disabled={loading}
                 >
-                  <svg
-                    className="me-1 -ms-1 w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
                   {editSubsection ? "Update Subsection" : "Add Subsection"}
                 </button>
               </form>

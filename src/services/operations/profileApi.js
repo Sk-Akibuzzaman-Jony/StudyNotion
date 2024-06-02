@@ -81,6 +81,7 @@ export function deleteAccount(token, navigate) {
     } finally {
       toast.dismiss(loading);
       navigate("/");
+      window.location.reload();
     }
   };
 }
@@ -128,12 +129,6 @@ export function changePassword(
 
 
 export async function getUserEnrolledCourses(token) {
-  const loading = toast.loading("Getting Enrolled Courses", {
-    toastId: "123",
-    position: "top-center",
-    hideProgressBar: true,
-    autoClose: false,
-  });
   let result = []
   try {
     //console.log("BEFORE Calling BACKEND API FOR ENROLLED COURSES");
@@ -149,12 +144,11 @@ export async function getUserEnrolledCourses(token) {
       throw new Error(response.data.message)
     }
     console.log(response);
-    result = response.data.courses == null ? {} : response.data.courses;
+    result = response.data.courses == null ? {} : response.data;
   } catch (error) {
     console.error(error)
     toast.error("Could Not Get Enrolled Courses")
   }
-  toast.dismiss(loading)
   return result
 }
 
@@ -217,3 +211,117 @@ export async function removeFromCart(courseId, token){
   toast.dismiss(loading)
   return result
 }
+
+export async function getInstructorDetails(token){
+  // const loading = toast.loading("Getting Instructor Details", {
+  //   toastId: "123",
+  //   position: "top-center",
+  //   hideProgressBar: true,
+  //   autoClose: false,
+  // });
+  let result = []
+  try {
+    //console.log("BEFORE Calling BACKEND API FOR ENROLLED COURSES");
+    const response = await apiConnector(
+      "POST",
+      profile.GET_INSTRUCTOR_DETAILS,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+    if (!response.data.success) {
+      throw new Error(response.data.message)
+    }
+    console.log(response);
+    result = response?.data?.coursesWithDetails == null ? {} : response?.data?.coursesWithDetails;
+  } catch (error) {
+    console.error(error)
+    toast.error("Could Not Get Instructor Details");
+  }
+  //toast.dismiss(loading)
+  return result
+}
+
+export async function editAdditionalDetails(dispatch, data, token) {
+    //console.log("Hello From Edit Additional Details");
+    const loading = toast.loading("Uploading", {
+      toastId: "123",
+      position: "top-center",
+      hideProgressBar: true,
+      autoClose: false,
+    });
+    try {
+      const response = await apiConnector(
+        "POST",
+        profile.UPDATE_PROFILE,
+        data,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+      if (response.data.success === true) {
+        console.log(response.data);
+        dispatch(setUser(response?.data?.user));
+        localStorage.setItem("user", JSON.stringify(response?.data?.user));
+        toast.success("Successfully Edited", {
+          toastId: "456",
+          position: "top-center",
+          hideProgressBar: true,
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("A problem occured", {
+        toastId: "456",
+        position: "top-center",
+        hideProgressBar: true,
+        autoClose: 1000,
+      });
+    } finally {
+      toast.dismiss(loading);
+    }
+  };
+
+  export async function editProfileDetails(dispatch, data, token) {
+    //console.log("Hello From Edit Additional Details");
+    const loading = toast.loading("Uploading", {
+      toastId: "123",
+      position: "top-center",
+      hideProgressBar: true,
+      autoClose: false,
+    });
+    try {
+      const response = await apiConnector(
+        "POST",
+        profile.EDIT_PROFILE,
+        data,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+      if (response.data.success === true) {
+        console.log(response.data);
+        dispatch(setUser(response?.data?.user));
+        localStorage.setItem("user", JSON.stringify(response?.data?.user));
+        toast.success("Successfully Edited", {
+          toastId: "456",
+          position: "top-center",
+          hideProgressBar: true,
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("A problem occured", {
+        toastId: "456",
+        position: "top-center",
+        hideProgressBar: true,
+        autoClose: 1000,
+      });
+    } finally {
+      toast.dismiss(loading);
+    }
+  };
+

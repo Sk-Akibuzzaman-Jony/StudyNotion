@@ -49,7 +49,7 @@ export default function ProfileDropDown() {
                         <Menu.Item>
                             {({ active }) => (
                                 <a
-                                    href="#"
+                                    href="/dashboard/settings"
                                     className={classNames(
                                         active ? 'bg-gray-100 text-grey-900' : 'text-richblack-50',
                                         'block px-4 py-2 text-sm'

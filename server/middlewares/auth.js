@@ -16,7 +16,7 @@ exports.auth = async (req, res, next) => {
                 message:'Token is missing',
             });
         }
-        console.log("token in auth -> ", token);
+        //console.log("token in auth -> ", token);
         //verify the token
         try{
             const decode =  jwt.verify(token, process.env.JWT_SECRET);
@@ -26,7 +26,7 @@ exports.auth = async (req, res, next) => {
             //verification - issue
             return res.status(401).json({
                 success:false,
-                message:'token is invalid',
+                message:'token is invalid please re-login',
             });
         }
         next();

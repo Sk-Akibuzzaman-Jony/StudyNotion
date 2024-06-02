@@ -56,6 +56,7 @@ exports.categoryPageDetails = async (req, res) => {
 				path: 'courses',
 				populate: {
 					path: 'instructor',
+					path: 'ratingAndReviews'
 				},
 			})
 			.exec();
@@ -99,11 +100,12 @@ exports.categoryPageDetails = async (req, res) => {
 			path: 'courses',
 			populate: {
 				path: 'instructor',
+				path: 'ratingAndReviews'
 			},
 		});
 
-		const allCourses = allCategories.flatMap((category) => category.courses);
-		const mostSellingCourses = allCourses
+		//const allCourses = allCategories.flatMap((category) => category.courses);
+		const mostSellingCourses = selectedCourses
 			.sort((a, b) => b.sold - a.sold)
 			.slice(0, 10);
 

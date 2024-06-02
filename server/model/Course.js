@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const autopopulate = require('mongoose-autopopulate');
 
 
 // Define the Courses schema
@@ -25,6 +26,7 @@ const coursesSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "RatingAndReview",
+            autopopulate: true, 
         
         },
     ],
@@ -48,7 +50,7 @@ const coursesSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
-            ref: "User",  // Corrected the ref to "User" to match the User model
+            ref: "User",  
         
         },
     ],
@@ -64,6 +66,6 @@ const coursesSchema = new mongoose.Schema({
     timestamps: true // Enabling timestamps to automatically add createdAt and updatedAt fields
 });
 
-
+coursesSchema.plugin(autopopulate);
 // Export the Courses model
 module.exports = mongoose.model("Course", coursesSchema);

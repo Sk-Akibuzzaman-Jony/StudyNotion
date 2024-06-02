@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   setCourse,
@@ -16,7 +16,6 @@ import {
 import InputTag from "./InputTag";
 import RequirementsField from "./RequirementsField.jsx";
 import { COURSE_STATUS } from "../../../../utils/constants.js";
-import Button from "../../HomePage/Button.jsx";
 
 const isValidJSON = (str) => {
   try {
@@ -40,10 +39,9 @@ const CourseInformationForm = () => {
   const [tags, setTags] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const { course, editCourse } = useSelector((state) => state.course);
-
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchCategories = async () => {
       const fetchedCategories = await fetchCourseCategories();
@@ -53,6 +51,7 @@ const CourseInformationForm = () => {
   }, []);
 
   useEffect(() => {
+    
     if (editCourse) {
       setValue("courseTitle", course.courseName);
       setValue("courseDescription", course.courseDescription);
@@ -71,6 +70,15 @@ const CourseInformationForm = () => {
       } else {
         setRequirements(course.instructions);
       }
+    } else {
+      setValue("courseTitle", "");
+      setValue("courseDescription", "");
+      setValue("price", "");
+      setValue("category", "");
+      setValue("whatYouWillLearn", "");
+      setValue("courseThumbnail", "");
+      setTags([]);
+      setRequirements([]);
     }
   }, [course, editCourse, setValue]);
 
@@ -88,7 +96,17 @@ const CourseInformationForm = () => {
     );
   };
 
+  // useEffect(() => {
+  //   const isAddCoursePage = location.pathname.includes("/add-course");
+  //   if (!courseId && isAddCoursePage) {
+  //     dispatch(setEditCourse(false));
+  //   }
+    
+  // }, [location.pathname]);
+  
+  
   const onSubmit = async (data) => {
+    setLoading(true);
     if (editCourse) {
       if (isFormUpdated()) {
         const formData = new FormData();
@@ -101,7 +119,12 @@ const CourseInformationForm = () => {
         }
         formData.append("tag", JSON.stringify(tags));
         formData.append("whatYouWillLearn", data.whatYouWillLearn);
-        formData.append("category", data.category);
+        if(data.category){
+          formData.append("category", data.category);
+        } else {
+          formData.append("category", selectedCategory._id);
+        }
+        
         formData.append("instructions", JSON.stringify(requirements));
 
         const result = await editCourseDetails(formData, token);
@@ -113,6 +136,7 @@ const CourseInformationForm = () => {
       } else {
         toast.error("No Changes Made So Far");
       }
+      setLoading(false);
       return;
     }
 
@@ -198,16 +222,21 @@ const CourseInformationForm = () => {
             Category <span className="text-red-500">*</span>
           </label>
           <select
-            {...register("category", { required: true })}
+            {...register("category", { required: !editCourse })}
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-gray-50 border border-richblack-800 text-richblack-200 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 bg-richblack-800 dark:border-gray-600"
           >
-            <option value="">Select Category</option>
+            {editCourse ? (<option value={selectedCategory._id}>{selectedCategory.name}</option>) : (
+              <option value="">Select Category</option>
+            )}
+
             {categories.map((category, index) => (
-              <option key={index} value={category._id}>
-                {category.name}
-              </option>
+              (!editCourse || category.name !== selectedCategory.name) && (
+                <option key={index} value={category._id}>
+                  {category.name}
+                </option>
+              )
             ))}
           </select>
           {errors.category && (
@@ -266,8 +295,9 @@ const CourseInformationForm = () => {
           <div className="flex h-fit justify-end gap-3">
             <input
               type="submit"
-              className="text-center text-[13px] px-6 py-3 rounded-md font-bold bg-yellow-50 text-black hover:scale-95 transition-all duration-2000 mt-10"
+              className={`text-center text-[13px] px-6 py-3 rounded-md font-bold bg-yellow-50 text-black hover:scale-95 transition-all duration-2000 mt-10 ${loading ? 'loader-button' : ''}`}
               value={editCourse ? "Save Changes" : "Next"}
+              disabled={loading}
             />
           </div>
         </form>
@@ -277,6 +307,7 @@ const CourseInformationForm = () => {
               type="button"
               onClick={handleContinueWithoutSave}
               className="bg-richblack-300 h-fit text-white text-center text-[13px] px-6 py-3 rounded-md font-bold hover:scale-95 transition-all duration-2000 mt-5"
+              disabled={loading}
             >
               Continue Without Saving
             </button>

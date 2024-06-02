@@ -40,9 +40,11 @@ const CartCourseCard = ({ course }) => {
           <div>
             <div className="text-2xl mb-2">{course?.courseName}</div>
 
-            <div className="text-richblack-100 text-base">
+            {course?.instructor?.firstName && (
+              <div className="text-richblack-100 text-base">
               By {course?.instructor?.firstName} {course?.instructor?.lastName}
             </div>
+            )}
             <div>
               {course?.ratingAndReviews?.length === 0 ? (
                 <div className="text-richblack-100 text-sm">No Ratings Yet</div>

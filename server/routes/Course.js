@@ -13,6 +13,9 @@ const {
   getInstructorCourses,
   deleteCourse,
   getEnrolledCourses,
+  markLectureAsComplete,
+  getCourseProgress,
+  getCourseDetailsAuth,
 } = require("../controllers/Course")
 
 
@@ -76,8 +79,11 @@ router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses);
 // Delete Subsection
 router.delete("/deleteCourse", auth, isInstructor, deleteCourse);
 //authenticated getcoursedetails
-router.post("/getFullCourseDetails", auth, isInstructor, getCourseDetails);
-
+router.post("/getFullCourseDetails", auth, getCourseDetailsAuth);
+//mark video as complete
+router.post("/updateCourseProgress", auth, isStudent, markLectureAsComplete);
+//get course progress
+router.post("/getCoureseProgress", auth, isStudent, getCourseProgress);
 
 // ***********************************************************************************************
 //                                      Category routes (Only by Admin)

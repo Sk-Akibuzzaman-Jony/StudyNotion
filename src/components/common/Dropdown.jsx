@@ -4,16 +4,21 @@ import { Link } from "react-router-dom";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { fetchCourseCategories } from "../../services/operations/courseDetailsAPI";
+import { setLoading } from "../../slices/loadingSlice";
+import { useDispatch } from "react-redux";
+
 
 const Dropdown = ({ link }) => {
   const [catagories, setCategories] = useState([]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(setLoading(true));
     const fetchCategories = async () => {
       const result = await fetchCourseCategories();
       setCategories(result);
     };
     fetchCategories();
+    dispatch(setLoading(false));
   }, []);
 
   return (

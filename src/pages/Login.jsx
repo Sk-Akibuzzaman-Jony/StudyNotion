@@ -1,16 +1,13 @@
-import React,{ useEffect } from "react";
+import React from "react";
 import StudentImage from "../assets/Images/login.webp";
 import { useState } from "react";
 import FrameImage from "../assets/Images/frame.png";
-import TeacherImage from "../assets/Images/Frame 22.png";
 import CTAButton from "../components/core/HomePage/Button";
 import {useDispatch} from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {login} from "../services/operations/authApi";
 
 const Login = () => {
-  const userTypes = ["Student", "Instructor"];
-  const [currentUserType, setCurrentUserType] = useState(userTypes[0]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -33,43 +30,14 @@ const Login = () => {
     <div className="flex flex-row w-11/12 mt-24 justify-center gap-16  mx-auto items-center mb-28">
       <div className="flex flex-col items center w-[30%] ">
         <div className="text-white text-bold text-4xl pb-9">Welcome Back</div>
-        {currentUserType === "Student" ? (
-          <div className="text-richblack-100 text-xl">
+        <div className="text-richblack-100 text-xl mb-8">
             Build skills for today, tomorrow, and beyond.
             <span className="text-blue-100 font-edu-sa">
               {" "}
               Education to future-proof your career
             </span>
           </div>
-        ) : (
-          <div className="text-richblack-100 text-xl">
-            Discover your passions
-            <span className="text-blue-100 font-edu-sa"> Be Unstoppable</span>
-          </div>
-        )}
         <div>
-          <div
-            className="mt-11 mb-11 flex flex-row rounded-full bg-richblack-800 border-richblack-100
-      px-1 py-1 w-fit "
-          >
-            {userTypes.map((element, index) => {
-              return (
-                <div
-                  className={`text-[16px] flex flex-row items-center gap-2 
-                ${
-                  currentUserType === element
-                    ? "bg-richblack-900 text-richblack-5 font-medium"
-                    : "text-richblack-200"
-                } rounded-full transition-all duration-200 cursor-pointer
-                hover:bg-richblack-900 hover:text-richblack-5 px-7 py-2`}
-                  key={index}
-                  onClick={() => setCurrentUserType(element)}
-                >
-                  {element}
-                </div>
-              );
-            })}
-          </div>
         </div>
         <div>
           <form class="space-y-4 md:space-y-6" action="#">
@@ -140,7 +108,7 @@ const Login = () => {
         />
 
         <img
-          src={currentUserType === "Student" ? StudentImage : TeacherImage}
+          src={StudentImage}
           alt="LoginImage"
           className="relative z-10  object-cover"
         />

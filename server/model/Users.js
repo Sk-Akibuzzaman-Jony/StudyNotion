@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "Profile",
-        //autopopulate: true, // this is causing to not log in, for some reason
+        autopopulate: true, 
     },
     courses: [{
         type: mongoose.Schema.Types.ObjectId,
