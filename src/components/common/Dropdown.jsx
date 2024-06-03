@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { fetchCourseCategories } from "../../services/operations/courseDetailsAPI";
 import { setLoading } from "../../slices/loadingSlice";
 import { useDispatch } from "react-redux";
 
-
 const Dropdown = ({ link }) => {
-  const [catagories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(setLoading(true));
     const fetchCategories = async () => {
+      dispatch(setLoading(true));
       const result = await fetchCourseCategories();
       setCategories(result);
+      dispatch(setLoading(false));
     };
+
     fetchCategories();
-    dispatch(setLoading(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <div className="">
+      <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 text-gray-900 shadow-sm hover:bg-gray-50">
           {link.title}
           <IoIosArrowDropdownCircle
@@ -42,18 +42,26 @@ const Dropdown = ({ link }) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black">
-          <div className="p-5">
-            {catagories.length ? (
-              catagories.map((catagory, index) => (
-                <Menu.Item>
-                  <Link to={`${link.path}/${catagory.name}`} key={index}>
-                    <p>{catagory.name}</p>
-                  </Link>
-                </Menu.Item>
+        <Menu.Items className="divide-y divide-gray-20 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black">
+          <div className="px-2 0">
+            {categories.length ? (
+              categories.map((category, index) => (
+                <Fragment key={index}>
+                  {index > 0 && <div className="border-t border-gray-200 my-2" />}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        to={`${link.path}/${category.name}`}
+                        className={`block py-2 ${active ? 'bg-gray-100' : ''}`}
+                      >
+                        {category.name}
+                      </Link>
+                    )}
+                  </Menu.Item>
+                </Fragment>
               ))
             ) : (
-              <div></div>
+              <div>No categories available</div>
             )}
           </div>
         </Menu.Items>
