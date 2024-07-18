@@ -55,10 +55,10 @@ const ViewCourse = () => {
         resetSidebar();
     }, [sectionId]);
 
-    if (viewCourse?.success === false) {
-        navigate(`/course/${courseId}`);
-        return;
-    }
+    // if (viewCourse?.success === false) {
+    //     navigate(`/course/${courseId}`);
+    //     return;
+    // }
 
     return (
         <div className='relative flex'>
