@@ -234,14 +234,14 @@ exports.getCourseDetailsAuth = async (req, res) => {
     console.log("courseId from getCourseDetails -> ", courseId);
 
     //check if student is enrolled in this course
-    const isCoursePresent = User.courses.some(course => course._id.toString() === courseId);
+    // const isCoursePresent = User.courses.some(course => course._id.toString() === courseId);
 
-    if (!isCoursePresent) {
-      return res.status(400).json({
-        success: false,
-        message: `User is not enrolled in the course with ID ${courseId}`,
-      });
-    }
+    // if (!isCoursePresent) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: `User is not enrolled in the course with ID ${courseId}`,
+    //   });
+    // }
 
     //find course details
     const courseDetails = await Course.findOne({
